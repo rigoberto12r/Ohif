@@ -20,11 +20,15 @@ export default function initWADOImageLoader(
     cornerstoneStreamingDynamicImageVolumeLoader
   );
 
+  const defaultMaxWorkers = 6;
+  const configMaxWorkers = appConfig.maxNumberOfWebWorkers || defaultMaxWorkers;
+  const maxWebWorkers = Math.min(
+    Math.max(navigator.hardwareConcurrency - 1, 1),
+    configMaxWorkers
+  );
+
   dicomImageLoader.init({
-    maxWebWorkers: Math.min(
-      Math.max(navigator.hardwareConcurrency - 1, 1),
-      appConfig.maxNumberOfWebWorkers
-    ),
+    maxWebWorkers,
     beforeSend: function (xhr) {
       //TODO should be removed in the future and request emitted by DicomWebDataSource
       const sourceConfig = extensionManager.getActiveDataSource()?.[0].getConfig() ?? {};

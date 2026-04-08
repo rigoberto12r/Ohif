@@ -68,11 +68,40 @@ module.exports = (env, argv, { SRC_DIR, ENTRY }) => {
     devtool: isProdBuild ? 'source-map' : 'cheap-module-source-map',
     entry: ENTRY,
     optimization: {
-      // splitChunks: {
-      //   // include all types of chunks
-      //   chunks: 'all',
-      // },
-      //runtimeChunk: 'single',
+      splitChunks: {
+        chunks: 'all',
+        maxInitialRequests: 15,
+        maxAsyncRequests: 20,
+        minSize: 20000,
+        cacheGroups: {
+          cornerstone: {
+            test: /[\\/]node_modules[\\/]@cornerstonejs[\\/]/,
+            name: 'vendor-cornerstone',
+            chunks: 'all',
+            priority: 20,
+          },
+          dcmjs: {
+            test: /[\\/]node_modules[\\/]dcmjs[\\/]/,
+            name: 'vendor-dcmjs',
+            chunks: 'all',
+            priority: 15,
+          },
+          react: {
+            test: /[\\/]node_modules[\\/](react|react-dom|react-router)[\\/]/,
+            name: 'vendor-react',
+            chunks: 'all',
+            priority: 15,
+          },
+          vendors: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+            priority: 5,
+            reuseExistingChunk: true,
+          },
+        },
+      },
+      runtimeChunk: 'single',
       minimize: isProdBuild,
       sideEffects: false,
     },

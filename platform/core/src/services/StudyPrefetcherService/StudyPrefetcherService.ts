@@ -46,8 +46,7 @@ type StudyPrefetcherConfig = {
    * prefetch requests get fulfilled the new ones from the new dropped series
    * are sent to the server.
    *
-   * TODO: abort all prefetch requests when a new series is loaded on a viewport.
-   * (need to add support for `AbortController` on Cornerstone)
+   * Prefetch requests are aborted via AbortController when a new series is loaded on a viewport.
    * */
   maxNumPrefetchRequests: number;
   /* Display sets prefetching order (closest, downward and upward) */
@@ -67,6 +66,7 @@ type ImageRequest = {
   displaySetInstanceUID: string;
   imageId: string;
   aborted: boolean;
+  abortController?: AbortController;
 };
 
 type PubSubServiceSubscription = { unsubscribe: () => any };
@@ -122,8 +122,7 @@ class StudyPrefetcherService extends PubSubService {
      * prefetch requests get fulfilled the new ones from the new dropped series
      * are sent to the server.
      *
-     * TODO: abort all prefetch requests when a new series is loaded on a viewport.
-     * (need to add support for `AbortController` on Cornerstone)
+     * Prefetch requests are aborted via AbortController when a new series is loaded on a viewport.
      * */
     maxNumPrefetchRequests: 10,
     /* Display sets prefetching order (closest, downward and upward) */
@@ -606,6 +605,9 @@ class StudyPrefetcherService extends PubSubService {
 
     imageRequests.forEach(imageRequest => {
       const { imageId } = imageRequest;
+      const abortController = new AbortController();
+      imageRequest.abortController = abortController;
+
       const options = {
         priority: -5,
         requestType: this.requestType,
@@ -613,13 +615,19 @@ class StudyPrefetcherService extends PubSubService {
         preScale: {
           enabled: true,
         },
+        abortSignal: abortController.signal,
       };
 
       this.imageLoadPoolManager.addRequest(
         async () =>
           this.imageLoader.loadAndCacheImage(imageId, options).then(
             _image => this._onImagePrefetchSuccess(imageRequest),
-            error => this._onImagePrefetchFailed(imageRequest, error)
+            error => {
+              if (abortController.signal.aborted) {
+                return;
+              }
+              this._onImagePrefetchFailed(imageRequest, error);
+            }
           ),
         this.requestType,
         { imageId }
@@ -677,8 +685,11 @@ class StudyPrefetcherService extends PubSubService {
     }
     this._isRunning = false;
 
-    // Mark all inflight requests as aborted before clearing the map.
-    this._inflightRequests.forEach(inflightRequest => (inflightRequest.aborted = true));
+    // Abort all inflight requests via AbortController and mark them as aborted.
+    this._inflightRequests.forEach(inflightRequest => {
+      inflightRequest.aborted = true;
+      inflightRequest.abortController?.abort();
+    });
 
     this._pendingRequests = [];
     this._displaySetLoadingStates.clear();
