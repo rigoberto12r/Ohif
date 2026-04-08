@@ -1,0 +1,15 @@
+{
+  "name": "@ohif/extension-collaboration",
+  "version": "3.12.0",
+  "description": "OHIF extension for real-time collaboration: shared cursors, annotations, and chat",
+  "author": "OHIF",
+  "license": "MIT",
+  "module": "src/index.tsx",
+  "peerDependencies": {
+    "@ohif/core": "3.12.0",
+    "react": "18.3.1"
+  },
+  "dependencies": {
+    "@babel/runtime": "7.28.2"
+  }
+}
