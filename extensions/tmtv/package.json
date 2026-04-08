@@ -1,4 +1,5 @@
 {
+  "sideEffects": false,
   "name": "@ohif/extension-tmtv",
   "version": "3.12.0",
   "description": "OHIF extension for Total Metabolic Tumor Volume",

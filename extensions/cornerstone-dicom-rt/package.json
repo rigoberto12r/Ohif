@@ -1,4 +1,5 @@
 {
+  "sideEffects": false,
   "name": "@ohif/extension-cornerstone-dicom-rt",
   "version": "3.12.0",
   "description": "DICOM RT read workflow",

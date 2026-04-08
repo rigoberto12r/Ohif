@@ -1,4 +1,5 @@
 {
+  "sideEffects": false,
   "name": "@ohif/extension-measurement-tracking",
   "version": "3.12.0",
   "description": "Tracking features and functionality for basic image viewing",

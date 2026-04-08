@@ -1,4 +1,5 @@
 {
+  "sideEffects": false,
   "name": "@ohif/extension-collaboration",
   "version": "3.12.0",
   "description": "OHIF extension for real-time collaboration: shared cursors, annotations, and chat",

@@ -1,4 +1,5 @@
 {
+  "sideEffects": false,
   "name": "@ohif/extension-default",
   "version": "3.12.0",
   "description": "Common/default features and functionality for basic image viewing",

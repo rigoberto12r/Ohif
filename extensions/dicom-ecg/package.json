@@ -1,4 +1,5 @@
 {
+  "sideEffects": false,
   "name": "@ohif/extension-dicom-ecg",
   "version": "3.12.0",
   "description": "OHIF extension for ECG/Waveform display",

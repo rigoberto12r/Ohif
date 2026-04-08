@@ -1,4 +1,5 @@
 {
+  "sideEffects": false,
   "name": "@ohif/extension-dicom-video",
   "version": "3.12.0",
   "description": "OHIF extension for video display",

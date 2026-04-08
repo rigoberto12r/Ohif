@@ -1,4 +1,5 @@
 {
+  "sideEffects": false,
   "name": "@ohif/extension-ai",
   "version": "3.12.0",
   "description": "OHIF extension for AI-assisted radiology: inference results panel and heatmap overlays",

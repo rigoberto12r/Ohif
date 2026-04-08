@@ -1,4 +1,5 @@
 {
+  "sideEffects": false,
   "name": "@ohif/extension-ultrasound-pleura-bline",
   "version": "3.12.0",
   "description": "",

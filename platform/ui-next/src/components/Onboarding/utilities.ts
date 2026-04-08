@@ -88,4 +88,32 @@ const customMiddleware = {
 
 const middleware = [offset(15), shift(), flip(), customMiddleware];
 
-export { hasTourBeenShown, markTourAsShown, middleware, defaultShowHandler };
+/**
+ * Reset all tours so they will be shown again.
+ */
+const resetAllTours = () => {
+  localStorage.removeItem('shownTours');
+};
+
+/**
+ * Get tour completion progress.
+ * @returns Object with total and completed counts.
+ */
+const getTourProgress = (tourIds: string[]) => {
+  const shownTours = getShownTours();
+  const completed = tourIds.filter(id => shownTours.includes(id)).length;
+  return {
+    total: tourIds.length,
+    completed,
+    percentage: tourIds.length > 0 ? Math.round((completed / tourIds.length) * 100) : 0,
+  };
+};
+
+export {
+  hasTourBeenShown,
+  markTourAsShown,
+  middleware,
+  defaultShowHandler,
+  resetAllTours,
+  getTourProgress,
+};

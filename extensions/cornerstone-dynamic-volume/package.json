@@ -1,4 +1,5 @@
 {
+  "sideEffects": false,
   "name": "@ohif/extension-cornerstone-dynamic-volume",
   "version": "3.12.0",
   "description": "OHIF extension for 4D volumes data",
