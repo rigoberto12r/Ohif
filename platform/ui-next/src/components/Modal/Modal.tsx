@@ -22,6 +22,8 @@ const Modal: React.FC<ModalProps> = ({
   shouldCloseOnOverlayClick = true,
   containerClassName,
 }) => {
+  const titleId = title ? `modal-title-${title.replace(/\s+/g, '-').toLowerCase()}` : undefined;
+
   return (
     <Dialog
       open={isOpen}
@@ -29,10 +31,15 @@ const Modal: React.FC<ModalProps> = ({
       shouldCloseOnEsc={shouldCloseOnEsc}
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
-      <DialogContent className={containerClassName}>
+      <DialogContent
+        className={containerClassName}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+      >
         {title && (
           <DialogHeader>
-            <DialogTitle>{title}</DialogTitle>
+            <DialogTitle id={titleId}>{title}</DialogTitle>
           </DialogHeader>
         )}
         <div className={cn('mt-2')}>{children}</div>

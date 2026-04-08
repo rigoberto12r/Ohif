@@ -151,6 +151,12 @@ function ViewerLayout({
 
   return (
     <div>
+      <a
+        href="#main-viewport"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:bg-primary focus:px-4 focus:py-2 focus:text-white"
+      >
+        Skip to main content
+      </a>
       <ViewerHeader
         hotkeysManager={hotkeysManager}
         extensionManager={extensionManager}
@@ -158,8 +164,10 @@ function ViewerLayout({
         appConfig={appConfig}
       />
       <div
+        id="main-viewport"
         className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
         style={{ height: 'calc(100vh - 52px' }}
+        role="main"
       >
         <React.Fragment>
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}

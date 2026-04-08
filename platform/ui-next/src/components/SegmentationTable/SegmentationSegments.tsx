@@ -92,6 +92,8 @@ export const SegmentationSegments = ({ children = null }: { children?: React.Rea
     <div ref={scrollableContainerRef}>
       <ScrollArea
         className={`bg-bkg-low space-y-px`}
+        role="list"
+        aria-label="Segmentation segments"
         showArrows={
           scrollableContainerRef?.current
             ? scrollableContainerRef?.current?.offsetHeight >= parseFloat(maxHeight)

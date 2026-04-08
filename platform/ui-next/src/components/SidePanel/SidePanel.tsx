@@ -162,7 +162,7 @@ const getToolTipContent = (label: string, disabled: boolean) => {
   return (
     <>
       <div>{label}</div>
-      {disabled && <div className="text-white">{'Not available based on current context'}</div>}
+      {disabled && <div className="text-white" aria-live="polite">{'Not available based on current context'}</div>}
     </>
   );
 };
@@ -291,6 +291,16 @@ const SidePanel = ({
           onClick={() => {
             updatePanelOpen(!panelOpen);
           }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              updatePanelOpen(!panelOpen);
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-expanded={panelOpen}
+          aria-label={`${panelOpen ? 'Collapse' : 'Expand'} ${side} panel`}
           data-cy={`side-panel-header-${side}`}
         >
           <Icons.NavigationPanelReveal
@@ -358,6 +368,45 @@ const SidePanel = ({
     );
   };
 
+  const handleTabKeyDown = useCallback(
+    (e: React.KeyboardEvent, tabIndex: number) => {
+      let nextIndex = tabIndex;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        nextIndex = (tabIndex + 1) % tabs.length;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        nextIndex = (tabIndex - 1 + tabs.length) % tabs.length;
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        nextIndex = 0;
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        nextIndex = tabs.length - 1;
+      } else if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (!tabs[tabIndex].disabled) {
+          updateActiveTabIndex(tabIndex);
+        }
+        return;
+      } else {
+        return;
+      }
+      // Skip disabled tabs
+      while (tabs[nextIndex]?.disabled && nextIndex !== tabIndex) {
+        nextIndex = e.key === 'ArrowLeft' || e.key === 'ArrowUp'
+          ? (nextIndex - 1 + tabs.length) % tabs.length
+          : (nextIndex + 1) % tabs.length;
+      }
+      if (!tabs[nextIndex]?.disabled) {
+        updateActiveTabIndex(nextIndex);
+        const nextTab = document.querySelector(`[data-cy="${tabs[nextIndex].name}-btn"]`) as HTMLElement;
+        nextTab?.focus();
+      }
+    },
+    [tabs, updateActiveTabIndex]
+  );
+
   const getTabGridComponent = () => {
     const numCols = getNumGridColumns(tabs.length, gridWidth);
 
@@ -365,9 +414,14 @@ const SidePanel = ({
       <>
         {getCloseIcon()}
         <div className={classnames('flex grow justify-center')}>
-          <div className={classnames('bg-primary-dark text-primary flex flex-wrap')}>
+          <div
+            className={classnames('bg-primary-dark text-primary flex flex-wrap')}
+            role="tablist"
+            aria-label={`${side} panel tabs`}
+          >
             {tabs.map((tab, tabIndex) => {
               const { disabled } = tab;
+              const isActive = tabIndex === activeTabIndex;
               return (
                 <React.Fragment key={tabIndex}>
                   {tabIndex % numCols !== 0 && (
@@ -376,6 +430,7 @@ const SidePanel = ({
                         'flex h-[28px] w-[2px] items-center bg-black',
                         tabSpacerWidth
                       )}
+                      aria-hidden="true"
                     >
                       <div className="bg-primary-dark h-[20px] w-full"></div>
                     </div>
@@ -387,17 +442,23 @@ const SidePanel = ({
                           numCols,
                           tabs.length,
                           tabIndex,
-                          tabIndex === activeTabIndex,
+                          isActive,
                           disabled
                         )}
                         style={getTabStyle(tabs.length)}
                         onClick={() => {
                           return disabled ? null : updateActiveTabIndex(tabIndex);
                         }}
+                        onKeyDown={(e) => handleTabKeyDown(e, tabIndex)}
                         data-cy={`${tab.name}-btn`}
+                        role="tab"
+                        aria-selected={isActive}
+                        aria-disabled={disabled || undefined}
+                        aria-label={tab.label}
+                        tabIndex={isActive ? 0 : -1}
                       >
                         <div
-                          className={getTabIconClassNames(tabs.length, tabIndex === activeTabIndex)}
+                          className={getTabIconClassNames(tabs.length, isActive)}
                         >
                           {React.createElement(Icons[tab.iconName] || Icons.MissingIcon, {
                             className: classnames({
@@ -408,6 +469,7 @@ const SidePanel = ({
                               width: '22px',
                               height: '22px',
                             },
+                            'aria-hidden': true,
                           })}
                         </div>
                       </div>
@@ -459,13 +521,24 @@ const SidePanel = ({
     <div
       className={classnames(className, baseClasses)}
       style={style}
+      role="region"
+      aria-label={`${side} panel`}
     >
       {panelOpen ? (
         <>
           {getOpenStateComponent()}
           {tabs.map((tab, tabIndex) => {
             if (tabIndex === activeTabIndex) {
-              return <tab.content key={tabIndex} />;
+              return (
+                <div
+                  key={tabIndex}
+                  role="tabpanel"
+                  aria-label={tab.label}
+                  tabIndex={0}
+                >
+                  <tab.content />
+                </div>
+              );
             }
             return null;
           })}
