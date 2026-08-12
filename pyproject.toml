@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "gridbot"
+version = "0.1.0"
+description = "Adaptive grid trading bot for Binance spot — strategy engine + pessimistic backtester"
+requires-python = ">=3.10"
+dependencies = [
+    "ccxt>=4.0",
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "pyyaml>=6.0",
+    "pyarrow>=14.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=7.0"]
+
+[project.scripts]
+gridbot = "gridbot.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["gridbot*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,26 @@
+symbol: BTC/USDT
+timeframe: 1h
+capital: 1000.0
+
+grid:
+  n_levels: 6
+  atr_period: 14
+  atr_mult: 1.0
+  min_spacing_pct: 0.005
+  recenter_candles: 6
+  inventory_policy: keep   # keep | flush
+
+fees:
+  fee_pct: 0.001           # Binance spot, per side
+  slippage_pct: 0.0005
+
+regime:
+  enabled: true
+  adx_period: 14
+  adx_threshold: 27.0
+  use_daily_ema: true
+  ema_daily_period: 200
+
+risk:
+  max_exposure_pct: 0.65
+  global_stop_pct: 0.12
